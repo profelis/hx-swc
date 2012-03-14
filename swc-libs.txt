@@ -1,1 +1,0 @@
--swf-lib "src/Console.swc.swf" 

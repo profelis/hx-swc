@@ -17,7 +17,7 @@ class Main
 	
 	static function main() 
 	{
-		SWC.watch();
+		SWC.watch(["src/deep"]);
 		
 		var stage = Lib.current.stage;
 		stage.scaleMode = StageScaleMode.NO_SCALE;

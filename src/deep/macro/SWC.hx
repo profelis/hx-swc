@@ -25,11 +25,33 @@ class SWC
 	}
 	#end
 
-	@:macro public static function watch():Expr
+	@:macro public static function watch(paths:Array<String> = null, includeClassPath:Bool = true):Expr
 	{
 		var libs = new Array<String>();
+		var crcs = new Array<String>();
 		
-		for (path in Context.getClassPath())
+		var crcName = ".swc.crc";
+		var crc;
+		
+		if (paths == null) paths = new Array<String>();
+		if (includeClassPath) paths = paths.concat(Context.getClassPath());
+		
+		if (FileSystem.exists(crcName))
+		{
+			crc = new Hash<String>();
+			var content = File.getContent(crcName);
+			var items = content.split("\n");
+			for (item in items)
+			{
+				if (item.length > 0)
+				{
+					var a = item.split("~");
+					crc.set(a[0], a[1]);
+				}
+			}
+		}
+		
+		for (path in paths)
 		{
 			if (path.length == 0) continue;
 			
@@ -61,34 +83,25 @@ class SWC
 			
 			if (files.length == 0) continue;
 			
-			var crcName = path + "/.swc.crc";
-			var crc;
-			if (FileSystem.exists(crcName))
-			{
-				crc = new Hash<String>();
-				var content = File.getContent(crcName);
-				var items = content.split("\n");
-				for (item in items)
-				{
-					var a = item.split("~");
-					if (a[0].length > 0)
-						crc.set(a[0], a[1]);
-				}
-			}
 			
-			var crcFile = File.write(crcName, false);
+			
 			for (f in files)
 			{
 				var swcFullName = path + "/" + f;
+				var swfFullName = path + "/" + f + ".swf";
+				
 				var stat = FileSystem.stat(swcFullName);
 				var signature = Std.string(stat.mtime);
-				crcFile.writeString(f + "~" + signature + "~\n");
+				
+				trace(swcFullName);
+				
+				crcs.push(swcFullName + "~" + signature + "~\n");
+				libs.push("-swf-lib \"" + swfFullName + '"');
+				
 				if (crc != null)
 				{
 					if (crc.exists(swcFullName) && signature == crc.get(swcFullName)) continue;
 				}
-				
-				var swfFullName = path + "/" + f + ".swf";
 				
 				var item = new Reader(File.read(swcFullName));
 				for (i in item.read())
@@ -98,18 +111,18 @@ class SWC
 						var of = File.write(swfFullName);
 						of.write(i.data);
 						of.close();
-						libs.push("-swf-lib \"" + swfFullName + '"');
 					}
 				}
 			}
-			crcFile.close();
 		}
 		
-		var bf = File.write("swc-libs.txt");
-		for (l in libs)
-			bf.writeString(l + " ");
-			
-		bf.close();
+		var crcFile = File.write(crcName, false);
+		for (l in crcs) crcFile.writeString(l);
+		crcFile.close();
+		
+		var libsListFile = File.write("swf-libs.txt");
+		for (l in libs) libsListFile.writeString(l + "\n");
+		libsListFile.close();
 		
 		return {expr:EConst(CString("null")), pos:Context.currentPos()};
 	}
