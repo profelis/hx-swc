@@ -81,21 +81,16 @@ class SWC
 				var swcFullName = path + "/" + f;
 				var swfFullName = path + "/" + f + ".swf";
 				
-				trace(swcFullName);
-				
 				var stat = FileSystem.stat(swcFullName);
 				var signature = Std.string(stat.mtime);
 				
 				crcs.push(swcFullName + "~" + signature + "~\n");
 				libs.push("-swf-lib \"" + swfFullName + '"');
 				
-				if (crc != null)
-				{
-					if (crc.exists(swcFullName) && signature == crc.get(swcFullName)) continue;
-				}
+				if (crc != null && crc.exists(swcFullName) 
+					&& signature == crc.get(swcFullName) && FileSystem.exists(swfFullName)) continue;
 				
-				var item = new Reader(File.read(swcFullName));
-				for (i in item.read())
+				for (i in new Reader(File.read(swcFullName)).read())
 				{
 					if (i.fileName == "library.swf")
 					{
