@@ -18,10 +18,12 @@ import neko.io.Path;
 
 class SWC 
 {
-	public static function main()
+	#if neko
+	static function main()
 	{
 		SWC.watch();
 	}
+	#end
 
 	@:macro public static function watch():Expr
 	{
