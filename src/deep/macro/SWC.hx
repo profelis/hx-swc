@@ -18,13 +18,6 @@ import neko.io.Path;
 
 class SWC 
 {
-	#if neko
-	static function main()
-	{
-		SWC.watch();
-	}
-	#end
-
 	@:macro public static function watch(paths:Array<String> = null, includeClassPath:Bool = true):Expr
 	{
 		var libs = new Array<String>();
@@ -83,17 +76,15 @@ class SWC
 			
 			if (files.length == 0) continue;
 			
-			
-			
 			for (f in files)
 			{
 				var swcFullName = path + "/" + f;
 				var swfFullName = path + "/" + f + ".swf";
 				
+				trace(swcFullName);
+				
 				var stat = FileSystem.stat(swcFullName);
 				var signature = Std.string(stat.mtime);
-				
-				trace(swcFullName);
 				
 				crcs.push(swcFullName + "~" + signature + "~\n");
 				libs.push("-swf-lib \"" + swfFullName + '"');

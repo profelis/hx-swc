@@ -1,5 +1,5 @@
 -cp src
--main deep.macro.SWC
+-main SWCImport
 --no-output
 -neko n.n
 -lib format

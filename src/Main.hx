@@ -1,7 +1,6 @@
 package ;
 
 import com.junkbyte.console.Cc;
-import deep.macro.SWC;
 import flash.display.Bitmap;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
@@ -17,7 +16,7 @@ class Main
 	
 	static function main() 
 	{
-		SWC.watch(["src/deep"]);
+		SWCImport.main();
 		
 		var stage = Lib.current.stage;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
