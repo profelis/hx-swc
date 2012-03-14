@@ -18,9 +18,9 @@ import neko.io.Path;
 
 class SWC 
 {
-	static function main()
+	public static function main()
 	{
-		//SWC.watch();
+		SWC.watch();
 	}
 
 	@:macro public static function watch():Expr
