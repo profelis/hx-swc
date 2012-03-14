@@ -30,7 +30,6 @@ class SWC
 		{
 			if (path.length == 0) continue;
 			
-			path = FileSystem.fullPath(path);
 			if (StringTools.endsWith(path, "\\") || StringTools.endsWith(path, "/"))
 				path = path.substr(0, path.length - 1);
 			
@@ -54,7 +53,7 @@ class SWC
 			
 			var files = new Array<String>();
 			
-			for (f in allFiles)
+			for (f in allFiles) 
 				if (StringTools.endsWith(f, ".swc")) files.push(f);
 			
 			if (files.length == 0) continue;

@@ -1,1 +1,1 @@
--swf-lib "D:\dev\haxe\hx-swc\src/Console.swc.swf" 
+-swf-lib "src/Console.swc.swf" 
