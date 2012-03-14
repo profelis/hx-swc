@@ -5,6 +5,7 @@ import format.zip.Reader;
 import haxe.io.Bytes;
 import haxe.macro.Context;
 import haxe.macro.Expr;
+import haxe.Stack;
 import neko.FileSystem;
 import neko.io.File;
 import neko.io.Path;
@@ -19,7 +20,7 @@ class SWC
 {
 	static function main()
 	{
-		SWC.watch();
+		//SWC.watch();
 	}
 
 	@:macro public static function watch():Expr
@@ -62,37 +63,40 @@ class SWC
 			var crc;
 			if (FileSystem.exists(crcName))
 			{
-				crc = new Hash<Float>();
+				crc = new Hash<String>();
 				var content = File.getContent(crcName);
 				var items = content.split("\n");
 				for (item in items)
 				{
-					var a = item.split(":");
+					var a = item.split("~");
 					if (a[0].length > 0)
-						crc.set(a[0], Std.parseFloat(a[1]));
+						crc.set(a[0], a[1]);
 				}
 			}
 			
 			var crcFile = File.write(crcName, false);
-			
 			for (f in files)
 			{
-				var name = f + ".swf";
-				var fullname = path + "/" + name;
-				var item = new Reader(File.read(path + "/" + f));
+				var swcFullName = path + "/" + f;
+				var stat = FileSystem.stat(swcFullName);
+				var signature = Std.string(stat.mtime);
+				crcFile.writeString(f + "~" + signature + "~\n");
+				if (crc != null)
+				{
+					if (crc.exists(swcFullName) && signature == crc.get(swcFullName)) continue;
+				}
+				
+				var swfFullName = path + "/" + f + ".swf";
+				
+				var item = new Reader(File.read(swcFullName));
 				for (i in item.read())
 				{
 					if (i.fileName == "library.swf")
 					{
-						var signature = Std.parseFloat(Std.string(i.crc32));
-						if (crc == null || !crc.exists(name) || signature != crc.get(name) || !FileSystem.exists(fullname))
-						{
-							var of = File.write(fullname);
-							of.write(i.data);
-							of.close();
-						}
-						libs.push("-swf-lib \"" + fullname + '"');
-						crcFile.writeString(name + ":" + signature + "\n");
+						var of = File.write(swfFullName);
+						of.write(i.data);
+						of.close();
+						libs.push("-swf-lib \"" + swfFullName + '"');
 					}
 				}
 			}
