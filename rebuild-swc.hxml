@@ -1,0 +1,4 @@
+-cp src
+-main deep.macro.SWC
+--no-output
+-lib format
