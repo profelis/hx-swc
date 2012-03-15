@@ -1,2 +1,2 @@
--swf-lib "src/deep/Console.swc.swf"
--swf-lib "src/Console.swc.swf"
+-swf-lib src/deep/Console.swc.swf
+-swf-lib src/Console 2.swc.swf

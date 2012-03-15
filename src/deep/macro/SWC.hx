@@ -84,7 +84,7 @@ class SWC
 				var signature = Std.string(stat.mtime);
 				
 				crcs.add(swcFullName + "~" + signature + "~\n");
-				libs.add("-swf-lib \"" + swfFullName + '"\n');
+				libs.add("-swf-lib " + swfFullName + '\n');
 				
 				if (crc != null && crc.exists(swcFullName) 
 					&& signature == crc.get(swcFullName) && FileSystem.exists(swfFullName)) continue;
