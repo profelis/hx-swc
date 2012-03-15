@@ -20,15 +20,11 @@ class SWC
 {
 	@:macro public static function watch(paths:Array<String> = null, includeClassPath:Bool = true):Expr
 	{
-		var libs = new Array<String>();
-		var crcs = new Array<String>();
+		var libs = new StringBuf();
+		var crcs = new StringBuf();
 		
 		var crcName = ".swc.crc";
 		var crc;
-		
-		if (paths == null) paths = new Array<String>();
-		if (includeClassPath) paths = paths.concat(Context.getClassPath());
-		
 		if (FileSystem.exists(crcName))
 		{
 			crc = new Hash<String>();
@@ -43,6 +39,9 @@ class SWC
 				}
 			}
 		}
+		
+		if (paths == null) paths = new Array<String>();
+		if (includeClassPath) paths = paths.concat(Context.getClassPath());
 		
 		for (path in paths)
 		{
@@ -79,13 +78,13 @@ class SWC
 			for (f in files)
 			{
 				var swcFullName = path + "/" + f;
-				var swfFullName = path + "/" + f + ".swf";
+				var swfFullName = swcFullName + ".swf";
 				
 				var stat = FileSystem.stat(swcFullName);
 				var signature = Std.string(stat.mtime);
 				
-				crcs.push(swcFullName + "~" + signature + "~\n");
-				libs.push("-swf-lib \"" + swfFullName + '"');
+				crcs.add(swcFullName + "~" + signature + "~\n");
+				libs.add("-swf-lib \"" + swfFullName + '"\n');
 				
 				if (crc != null && crc.exists(swcFullName) 
 					&& signature == crc.get(swcFullName) && FileSystem.exists(swfFullName)) continue;
@@ -103,11 +102,11 @@ class SWC
 		}
 		
 		var crcFile = File.write(crcName, false);
-		for (l in crcs) crcFile.writeString(l);
+		crcFile.writeString(crcs.toString());
 		crcFile.close();
 		
-		var libsListFile = File.write("swf-libs.txt");
-		for (l in libs) libsListFile.writeString(l + "\n");
+		var libsListFile = File.write("swf-libs.txt", false);
+		libsListFile.writeString(libs.toString());
 		libsListFile.close();
 		
 		return {expr:EConst(CString("null")), pos:Context.currentPos()};
