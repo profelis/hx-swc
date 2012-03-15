@@ -24,7 +24,7 @@ class SWC
 		var crcs = new StringBuf();
 		
 		var crcName = ".swc.crc";
-		var crc;
+		var crc:Hash<String>;
 		if (FileSystem.exists(crcName))
 		{
 			crc = new Hash<String>();
