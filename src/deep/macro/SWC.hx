@@ -20,6 +20,9 @@ class SWC
 {
 	@:macro public static function watch(paths:Array<String> = null, includeClassPath:Bool = true):Expr
 	{
+		if (Context.defined("display"))
+			return { expr:EConst(CString("null")), pos:Context.currentPos() };
+			
 		var libs = new StringBuf();
 		var crcs = new StringBuf();
 		
